@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'my-smart-mirror-1234.firebasestorage.app',
     measurementId: 'G-MYD2GSYYF7',
   );
+
 }

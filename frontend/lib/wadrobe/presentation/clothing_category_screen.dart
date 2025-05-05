@@ -1,16 +1,14 @@
+// ClothingCategoryScreen.dart
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker_web/image_picker_web.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_smart_mirror_app/wadrobe/widgets/clothing_card.dart';
 
-// Reusable screen for any clothing category
 class ClothingCategoryScreen extends StatefulWidget {
   final String categoryName;
 
-  const ClothingCategoryScreen({
-    Key? key,
-    required this.categoryName,
-  }) : super(key: key);
+  const ClothingCategoryScreen({Key? key, required this.categoryName}) : super(key: key);
 
   @override
   _ClothingCategoryScreenState createState() => _ClothingCategoryScreenState();
@@ -21,45 +19,61 @@ class _ClothingCategoryScreenState extends State<ClothingCategoryScreen> {
 
   void _uploadClothing() async {
     try {
-      final Uint8List? pickedFile = await ImagePickerWeb.getImageAsBytes();
+      final XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 50);
       if (pickedFile != null) {
-        clothingItems.add(pickedFile);
+        final Uint8List bytes = await pickedFile.readAsBytes();
+        setState(() {
+          clothingItems.add(bytes);
+        });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading item: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading item: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text(
           widget.categoryName,
-          style: const TextStyle(color: Colors.white24),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.white,
+          ),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFF121212),
+        elevation: 1,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemCount: clothingItems.length,
-        itemBuilder: (context, index) {
-          return ClothingCard(
-            imagePath: clothingItems[index],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
+      body: clothingItems.isEmpty
+          ? Center(
+              child: Text(
+                "No items in this category",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            )
+          : GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: clothingItems.length,
+              itemBuilder: (context, index) {
+                return ClothingCard(imagePath: clothingItems[index]);
+              },
+            ),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _uploadClothing,
-        tooltip: 'Add Item',
-        child: const Icon(Icons.add),
+        label: Text("Add Item"),
+        icon: Icon(Icons.add),
+        backgroundColor: Color(0xFF3A8DFF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
