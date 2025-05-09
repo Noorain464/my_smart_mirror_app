@@ -1,1 +1,4 @@
 .env
+my_smart_mirror_app/backend/my-smart-mirror-1234-firebase-adminsdk-fbsvc-5d66ce4224.json
+__pycache__/
+*.json

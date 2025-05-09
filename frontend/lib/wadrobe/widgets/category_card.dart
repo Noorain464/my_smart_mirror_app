@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -12,6 +13,9 @@ class CategoryCard extends StatelessWidget {
     required this.onTap,
   }) : super(key: key);
 
+  bool get isValidImage =>
+      (imagePath is String && imagePath != "empty") || imagePath is Uint8List;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -20,36 +24,68 @@ class CategoryCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
+          constraints: const BoxConstraints(
+            minHeight: 180,
+            maxHeight: 220,
+          ),
           decoration: BoxDecoration(
-            color: Color(0xFF1E1E1E), // Dark card background for dark mode
+            color: const Color(0xFF1E1E1E),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Color(0xFF2C2C2C)), // Dark border
+            border: Border.all(color: const Color(0xFF2C2C2C)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.5),
                 blurRadius: 6,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                child: imagePath is String
-                    ? Image.asset(imagePath, fit: BoxFit.cover, height: 140)
-                    : Image.memory(imagePath, fit: BoxFit.cover, height: 140),
+              Flexible(
+                flex: 2,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
+                  child: isValidImage
+                      ? (imagePath is String
+                          ? Image.network(
+                              imagePath,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            )
+                          : Image.memory(
+                              imagePath,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ))
+                      : Container(
+                          color: Colors.grey[800],
+                          child: const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
+                              color: Colors.grey,
+                              size: 48,
+                            ),
+                          ),
+                        ),
+                ),
               ),
+              const SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 12.0),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 12.0,
+                ),
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white, // White text for contrast
+                    color: Colors.white,
                   ),
                   textAlign: TextAlign.center,
                 ),

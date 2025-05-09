@@ -33,7 +33,7 @@ class ClothingCard extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: imagePath is String
-                ? Image.asset(imagePath, fit: BoxFit.cover)
+                ? Image.network(imagePath, fit: BoxFit.cover)
                 : Image.memory(imagePath, fit: BoxFit.cover),
           ),
         ),
