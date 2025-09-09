@@ -27,3 +27,15 @@ async def get_wardrobe_categories():
         return [WardrobeCategory(**doc.to_dict()) for doc in docs]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/wardrobe/{category_name}")
+async def delete_wardrobe_category(category_name: str):
+    try:
+        doc_ref = db.collection("wardrobe").document(category_name)
+        doc = doc_ref.get()
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Category not found")
+        doc_ref.delete()
+        return {"message": f"Category '{category_name}' deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
